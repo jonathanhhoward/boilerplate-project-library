@@ -5,6 +5,8 @@ require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const helmet = require('helmet')
+const nocache = require('nocache')
 
 const apiRoutes = require('./routes/api.js')
 const fccTestingRoutes = require('./routes/fcctesting.js')
@@ -22,6 +24,9 @@ async function run () {
     console.log('Connected to MongoClient')
 
     const db = client.db()
+
+    app.use(helmet())
+    app.use(nocache())
 
     app.use('/public', express.static(process.cwd() + '/public'))
 
