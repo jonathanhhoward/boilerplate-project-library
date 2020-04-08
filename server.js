@@ -1,56 +1,78 @@
-'use strict';
+'use strict'
 
-var express     = require('express');
-var bodyParser  = require('body-parser');
-var cors        = require('cors');
+require('dotenv').config()
 
-var apiRoutes         = require('./routes/api.js');
-var fccTestingRoutes  = require('./routes/fcctesting.js');
-var runner            = require('./test-runner');
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
 
-var app = express();
+const apiRoutes = require('./routes/api.js')
+const fccTestingRoutes = require('./routes/fcctesting.js')
+const runner = require('./test-runner')
 
-app.use('/public', express.static(process.cwd() + '/public'));
+const app = express()
 
-app.use(cors({origin: '*'})); //USED FOR FCC TESTING PURPOSES ONLY!
+const { MongoClient } = require('mongodb')
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const client = new MongoClient(process.env.MONGODB_URI, { useUnifiedTopology: true })
 
-//Index page (static HTML)
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
+async function run () {
+  try {
+    await client.connect()
+    console.log('Connected to MongoClient')
 
-//For FCC testing purposes
-fccTestingRoutes(app);
+    const db = client.db()
 
-//Routing for API 
-apiRoutes(app);  
-    
-//404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
-});
+    app.use('/public', express.static(process.cwd() + '/public'))
 
-//Start our server and tests!
-app.listen(process.env.PORT || 3000, function () {
-  console.log("Listening on port " + process.env.PORT);
-  if(process.env.NODE_ENV==='test') {
-    console.log('Running Tests...');
-    setTimeout(function () {
-      try {
-        runner.run();
-      } catch(e) {
-        var error = e;
-          console.log('Tests are not valid:');
-          console.log(error);
+    app.use(cors({ origin: '*' })) //USED FOR FCC TESTING PURPOSES ONLY!
+
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
+
+    //Index page (static HTML)
+    app.route('/')
+      .get(function (req, res) {
+        res.sendFile(process.cwd() + '/views/index.html')
+      })
+
+    //For FCC testing purposes
+    fccTestingRoutes(app)
+
+    //Routing for API
+    apiRoutes(app, db)
+
+    //404 Not Found Middleware
+    app.use(function (req, res, next) {
+      res.status(404)
+        .type('text')
+        .send('Not Found')
+    })
+
+    //Start our server and tests!
+    const port = process.env.PORT || 3000
+    app.listen(port, function () {
+      console.log('Listening on port ' + port)
+      if (process.env.NODE_ENV === 'test') {
+        console.log('Running Tests...')
+        setTimeout(function () {
+          try {
+            runner.run()
+          } catch (err) {
+            console.log('Tests are not valid:')
+            console.log(err)
+          }
+        }, 1500)
       }
-    }, 1500);
-  }
-});
+    })
 
-module.exports = app; //for unit/functional testing
+  } catch (err) {
+    console.log(err.stack)
+  } finally {
+    await client.close()
+  }
+}
+
+run().catch(console.dir)
+
+module.exports = app //for unit/functional testing

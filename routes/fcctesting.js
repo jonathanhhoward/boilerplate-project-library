@@ -49,7 +49,7 @@ module.exports = function (app) {
         res.type('txt').send(data.toString());
       });
     });
-    
+
   var error;
   app.get('/_api/get-tests', cors(), function(req, res, next){
     console.log(error);
@@ -66,14 +66,14 @@ module.exports = function (app) {
     });
   });
   app.get('/_api/app-info', function(req, res) {
-    var hs = Object.keys(res._headers)
+    var hs = Object.keys(res.getHeaders())
       .filter(h => !h.match(/^access-control-\w+/));
     var hObj = {};
-    hs.forEach(h => {hObj[h] = res._headers[h]});
-    delete res._headers['strict-transport-security'];
+    hs.forEach(h => {hObj[h] = res.getHeaders()[h]});
+    delete res.getHeaders()['strict-transport-security'];
     res.json({headers: hObj});
   });
-  
+
 };
 
 function testFilter(tests, type, n) {
