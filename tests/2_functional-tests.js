@@ -102,8 +102,22 @@ suite('Functional Tests', function () {
     })
 
     suite('POST /api/books/[id] => add comment/expect book object with id', function () {
-      test.skip('Test POST /api/books/[id] with comment', function (done) {
-        //done();
+      test('Test POST /api/books/[id] with comment', function (done) {
+        chai.request(server)
+          .get(route)
+          .end(function (err, res) {
+            if (err) return done(err)
+            const comment = 'test'
+            chai.request(server)
+              .post(`${route}/${res.body[0]._id}`)
+              .send({ comment: comment })
+              .end(function (err, res) {
+                if (err) return done(err)
+                assert.strictEqual(res.status, 200)
+                assert.include(res.body.comments, comment)
+                done()
+              })
+          })
       })
     })
   })
