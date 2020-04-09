@@ -19,8 +19,17 @@ module.exports = function (app, db) {
     })
 
     .post(function (req, res) {
-      const title = req.body.title
-      //response will contain new book object including atleast _id and title
+      const book = {
+        title: req.body.title,
+        comments: []
+      }
+
+      if (!book.title) return res.send('missing title')
+
+      db.collection('books')
+        .insertOne(book)
+        .then((result) => res.json(result.ops[0]))
+        .catch(console.error)
     })
 
     .delete(function (req, res) {
