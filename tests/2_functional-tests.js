@@ -81,8 +81,23 @@ suite('Functional Tests', function () {
           })
       })
 
-      test.skip('Test GET /api/books/[id] with valid id in db', function (done) {
-        //done();
+      test('Test GET /api/books/[id] with valid id in db', function (done) {
+        chai.request(server)
+          .get(route)
+          .end(function (err, res) {
+            if (err) return done(err)
+            chai.request(server)
+              .get(`${route}/${res.body[0]._id}`)
+              .end(function (err, res) {
+                if (err) return done(err)
+                assert.strictEqual(res.status, 200)
+                assert.isObject(res.body)
+                assert.property(res.body, 'comments')
+                assert.property(res.body, 'title')
+                assert.property(res.body, '_id')
+                done()
+              })
+          })
       })
     })
 
