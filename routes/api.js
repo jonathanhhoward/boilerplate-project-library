@@ -47,8 +47,14 @@ module.exports = function (app, db) {
 
   app.route('/api/books/:id')
     .get(function (req, res) {
-      const bookid = req.params.id
-      //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+      db.collection('books')
+        .findOne({ _id: ObjectID(req.params.id) })
+        .then((result) => {
+          if (!result) return res.send('no book exists')
+
+          res.json(result)
+        })
+        .catch(console.error)
     })
 
     .post(function (req, res) {
