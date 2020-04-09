@@ -14,8 +14,17 @@ module.exports = function (app, db) {
 
   app.route('/api/books')
     .get(function (req, res) {
-      //response will be array of book objects
-      //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+      db.collection('books')
+        .find()
+        .toArray()
+        .then((books) => res.json(
+          books.map((book) => ({
+            _id: book._id,
+            title: book.title,
+            commentcount: book.comments.length
+          }))
+        ))
+        .catch(console.error)
     })
 
     .post(function (req, res) {
