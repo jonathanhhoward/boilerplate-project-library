@@ -58,9 +58,21 @@ module.exports = function (app, db) {
     })
 
     .post(function (req, res) {
-      const bookid = req.params.id
-      const comment = req.body.comment
-      //json res format same as .get
+      const bookId = { _id: ObjectID(req.params.id) }
+
+      db.collection('books')
+        .findOne(bookId)
+        .then((result) => {
+          if (!result) return res.send('no book exists')
+
+          db.collection('books')
+            .findOneAndUpdate(bookId, {
+              $set: { comments: result.comments.concat(req.body.comment) }
+            })
+            .then((result) => res.json(result.value))
+            .catch(console.error)
+        })
+        .catch(console.error)
     })
 
     .delete(function (req, res) {
