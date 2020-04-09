@@ -15,8 +15,7 @@ chai.use(chaiHttp)
 
 suite('Functional Tests', function () {
   suite('Routing tests', function () {
-    const basicRoute = '/api/books'
-    const idRoute = '/api/books/:id'
+    const route = '/api/books'
 
     suite('POST /api/books with title => create book object/expect book object', function () {
       test('Test POST /api/books with title', function (done) {
@@ -25,7 +24,7 @@ suite('Functional Tests', function () {
         }
 
         chai.request(server)
-          .post(basicRoute)
+          .post(route)
           .send(book)
           .end(function (err, res) {
             assert.strictEqual(res.status, 200)
@@ -40,7 +39,7 @@ suite('Functional Tests', function () {
         }
 
         chai.request(server)
-          .post(basicRoute)
+          .post(route)
           .send(book)
           .end(function (err, res) {
             assert.strictEqual(res.status, 200)
@@ -53,7 +52,7 @@ suite('Functional Tests', function () {
     suite('GET /api/books => array of books', function () {
       test('Test GET /api/books', function (done) {
         chai.request(server)
-          .get(basicRoute)
+          .get(route)
           .end(function (err, res) {
             assert.strictEqual(res.status, 200)
             assert.isArray(res.body)
