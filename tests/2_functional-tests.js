@@ -14,14 +14,11 @@ const server = require('../server')
 chai.use(chaiHttp)
 
 suite('Functional Tests', function () {
-
-
   suite('Routing tests', function () {
     const basicRoute = '/api/books'
     const idRoute = '/api/books/:id'
 
     suite('POST /api/books with title => create book object/expect book object', function () {
-
       test('Test POST /api/books with title', function (done) {
         const book = {
           title: 'test'
@@ -51,7 +48,6 @@ suite('Functional Tests', function () {
             done()
           })
       })
-
     })
 
     suite('GET /api/books => array of books', function () {
@@ -70,7 +66,6 @@ suite('Functional Tests', function () {
     })
 
     suite('GET /api/books/[id] => book object with [id]', function () {
-
       test.skip('Test GET /api/books/[id] with id not in db', function (done) {
         //done();
       })
@@ -78,17 +73,12 @@ suite('Functional Tests', function () {
       test.skip('Test GET /api/books/[id] with valid id in db', function (done) {
         //done();
       })
-
     })
 
     suite('POST /api/books/[id] => add comment/expect book object with id', function () {
-
       test.skip('Test POST /api/books/[id] with comment', function (done) {
         //done();
       })
-
     })
-
   })
-
 })
