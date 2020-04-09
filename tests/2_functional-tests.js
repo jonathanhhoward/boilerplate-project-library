@@ -28,6 +28,7 @@ suite('Functional Tests', function () {
           .post(route)
           .send(book)
           .end(function (err, res) {
+            if (err) return done(err)
             assert.strictEqual(res.status, 200)
             assert.strictEqual(res.body.title, book.title)
             done()
@@ -43,6 +44,7 @@ suite('Functional Tests', function () {
           .post(route)
           .send(book)
           .end(function (err, res) {
+            if (err) return done(err)
             assert.strictEqual(res.status, 200)
             assert.strictEqual(res.text, 'missing title')
             done()
@@ -55,6 +57,7 @@ suite('Functional Tests', function () {
         chai.request(server)
           .get(route)
           .end(function (err, res) {
+            if (err) return done(err)
             assert.strictEqual(res.status, 200)
             assert.isArray(res.body)
             assert.property(res.body[0], 'commentcount')
