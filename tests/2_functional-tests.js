@@ -39,8 +39,19 @@ suite('Functional Tests', function () {
 
     suite('POST /api/books with title => create book object/expect book object', function () {
 
-      test.skip('Test POST /api/books with title', function (done) {
-        //done();
+      test('Test POST /api/books with title', function (done) {
+        const book = {
+          title: 'test'
+        }
+
+        chai.request(server)
+          .post('/api/books')
+          .send(book)
+          .end(function (err, res) {
+            assert.strictEqual(res.status, 200)
+            assert.strictEqual(res.body.title, book.title)
+            done()
+          })
       })
 
       test.skip('Test POST /api/books with no title given', function (done) {
