@@ -10,6 +10,7 @@ const chaiHttp = require('chai-http')
 const chai = require('chai')
 const assert = chai.assert
 const server = require('../server')
+const { ObjectID } = require('mongodb')
 
 chai.use(chaiHttp)
 
@@ -65,8 +66,16 @@ suite('Functional Tests', function () {
     })
 
     suite('GET /api/books/[id] => book object with [id]', function () {
-      test.skip('Test GET /api/books/[id] with id not in db', function (done) {
-        //done();
+      test('Test GET /api/books/[id] with id not in db', function (done) {
+        const idRoute = `${route}/${ObjectID(0x1)}`
+        chai.request(server)
+          .get(idRoute)
+          .end(function (err, res) {
+            if (err) return done(err)
+            assert.strictEqual(res.status, 200)
+            assert.strictEqual(res.text, 'no book exists')
+            done()
+          })
       })
 
       test.skip('Test GET /api/books/[id] with valid id in db', function (done) {
