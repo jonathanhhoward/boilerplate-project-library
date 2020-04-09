@@ -11,17 +11,17 @@
 const { ObjectID } = require('mongodb')
 
 module.exports = function (app, db) {
+  const books = db.collection('books')
 
   app.route('/api/books')
     .get(function (req, res) {
-      db.collection('books')
-        .find()
+      books.find()
         .toArray()
-        .then((books) => res.json(
-          books.map((book) => ({
-            _id: book._id,
-            title: book.title,
-            commentcount: book.comments.length
+        .then((results) => res.json(
+          results.map((doc) => ({
+            _id: doc._id,
+            title: doc.title,
+            commentcount: doc.comments.length
           }))
         ))
         .catch(console.error)
@@ -35,8 +35,7 @@ module.exports = function (app, db) {
 
       if (!book.title) return res.send('missing title')
 
-      db.collection('books')
-        .insertOne(book)
+      books.insertOne(book)
         .then((result) => res.json(result.ops[0]))
         .catch(console.error)
     })
@@ -47,8 +46,7 @@ module.exports = function (app, db) {
 
   app.route('/api/books/:id')
     .get(function (req, res) {
-      db.collection('books')
-        .findOne({ _id: ObjectID(req.params.id) })
+      books.findOne({ _id: ObjectID(req.params.id) })
         .then((result) => {
           if (!result) return res.send('no book exists')
 
@@ -60,16 +58,14 @@ module.exports = function (app, db) {
     .post(function (req, res) {
       const bookId = { _id: ObjectID(req.params.id) }
 
-      db.collection('books')
-        .findOne(bookId)
+      books.findOne(bookId)
         .then((result) => {
           if (!result) return res.send('no book exists')
 
-          db.collection('books')
-            .findOneAndUpdate(bookId, {
-              $set: { comments: result.comments.concat(req.body.comment) }
-            })
-            .then((result) => res.json(result.value))
+          books.findOneAndUpdate(bookId, {
+            $set: { comments: result.comments.concat(req.body.comment) }
+          })
+            .then((updatedResult) => res.json(updatedResult.value))
             .catch(console.error)
         })
         .catch(console.error)
