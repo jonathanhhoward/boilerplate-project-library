@@ -75,5 +75,4 @@ module.exports = function (app, db) {
       const bookid = req.params.id
       //if successful response will be 'delete successful'
     })
-
 }
