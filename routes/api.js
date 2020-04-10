@@ -58,15 +58,13 @@ module.exports = function (app, db) {
     .post(function (req, res) {
       const bookId = { _id: ObjectID(req.params.id) }
 
-      books.findOne(bookId)
+      books.findOneAndUpdate(bookId, {
+        $push: { comments: req.body.comment }
+      })
         .then((result) => {
-          if (!result) return res.send('no book exists')
+          if (!result.value) return res.send('no book exists')
 
-          books.findOneAndUpdate(bookId, {
-            $set: { comments: result.comments.concat(req.body.comment) }
-          })
-            .then((updatedResult) => res.json(updatedResult.value))
-            .catch(console.error)
+          res.json(result.value)
         })
         .catch(console.error)
     })
