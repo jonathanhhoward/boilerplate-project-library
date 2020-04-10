@@ -41,7 +41,11 @@ module.exports = function (app, db) {
     })
 
     .delete(function (req, res) {
-      //if successful response will be 'complete delete successful'
+      books.drop()
+        .then((result) => {
+          result ? res.send('complete delete successful') : res.send('no deletion')
+        })
+        .catch(console.error)
     })
 
   app.route('/api/books/:id')
