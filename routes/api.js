@@ -56,7 +56,8 @@ module.exports = function (app, db) {
     .post(function (req, res) {
       books.findOneAndUpdate(
         { _id: ObjectID(req.params.id) },
-        { $push: { comments: req.body.comment } }
+        { $push: { comments: req.body.comment } },
+        { returnOriginal: false }
       )
         .then((result) => {
           result.value ? res.json(result.value) : res.send('no book exists')
