@@ -48,29 +48,27 @@ module.exports = function (app, db) {
     .get(function (req, res) {
       books.findOne({ _id: ObjectID(req.params.id) })
         .then((result) => {
-          if (!result) return res.send('no book exists')
-
-          res.json(result)
+          result ? res.json(result) : res.send('no book exists')
         })
         .catch(console.error)
     })
 
     .post(function (req, res) {
-      const bookId = { _id: ObjectID(req.params.id) }
-
-      books.findOneAndUpdate(bookId, {
-        $push: { comments: req.body.comment }
-      })
+      books.findOneAndUpdate(
+        { _id: ObjectID(req.params.id) },
+        { $push: { comments: req.body.comment } }
+      )
         .then((result) => {
-          if (!result.value) return res.send('no book exists')
-
-          res.json(result.value)
+          result.value ? res.json(result.value) : res.send('no book exists')
         })
         .catch(console.error)
     })
 
     .delete(function (req, res) {
-      const bookid = req.params.id
-      //if successful response will be 'delete successful'
+      books.findOneAndDelete({ _id: ObjectID(req.params.id) })
+        .then((result) => {
+          result.value ? res.send('delete successful') : res.send('no book exists')
+        })
+        .catch(console.error)
     })
 }
