@@ -138,5 +138,18 @@ suite('Functional Tests', function () {
           })
       })
     })
+
+    suite('DELETE /api/books => delete all books in collection', function () {
+      test('Test DELETE /api/books', function (done) {
+        chai.request(server)
+          .delete(route)
+          .end(function (err, res) {
+            if (err) return done(err)
+            assert.strictEqual(res.status, 200)
+            assert.strictEqual(res.text, 'complete delete successful')
+            done()
+          })
+      })
+    })
   })
 })
