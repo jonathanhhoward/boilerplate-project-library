@@ -120,5 +120,23 @@ suite('Functional Tests', function () {
           })
       })
     })
+
+    suite('DELETE /api/books/[id] => delete a book/expect book object with id', function () {
+      test('Test DELETE /api/books[id]', function (done) {
+        chai.request(server)
+          .get(route)
+          .end(function (err, res) {
+            if (err) return done(err)
+            chai.request(server)
+              .delete(`${route}/${res.body[0]._id}`)
+              .end(function (err, res) {
+                if (err) return done(err)
+                assert.strictEqual(res.status, 200)
+                assert.strictEqual(res.text, 'delete successful')
+                done()
+              })
+          })
+      })
+    })
   })
 })
