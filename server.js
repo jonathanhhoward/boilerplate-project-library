@@ -8,7 +8,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const nocache = require('nocache')
 
-const apiRoutes = require('./routes/api.js')
+const apiRouter = require('./routes/api-router.js')
 const fccTestingRoutes = require('./routes/fcctesting.js')
 const runner = require('./test-runner')
 
@@ -34,7 +34,7 @@ app.route('/')
 fccTestingRoutes(app)
 
 //Routing for API
-apiRoutes(app)
+app.use('/api', apiRouter)
 
 //404 Not Found Middleware
 app.use(function (req, res, next) {
