@@ -40,9 +40,9 @@ async function addBook (req, res, next) {
 
 async function clearBooks (req, res, next) {
   try {
-    const response = await Book.drop()
+    const success = await Book.drop()
 
-    if (response) {
+    if (success) {
       res.send('complete delete successful')
     } else {
       res.send('no deletion')
@@ -82,9 +82,9 @@ async function addComment (req, res, next) {
 
 async function removeBook (req, res, next) {
   try {
-    const response = await Book.remove(req.params.id)
+    const success = await Book.remove(req.params.id)
 
-    if (response) {
+    if (success) {
       res.send('delete successful')
     } else {
       res.send('no book exists')
