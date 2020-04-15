@@ -1,7 +1,6 @@
 'use strict'
 
-const { MongoClient } = require('mongodb')
-const { ObjectID } = require('mongodb')
+const { MongoClient, ObjectID } = require('mongodb')
 
 const connection = new MongoClient(
   process.env.MONGODB_URI,
