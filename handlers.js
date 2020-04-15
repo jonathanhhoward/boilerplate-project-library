@@ -14,6 +14,7 @@ module.exports = {
 async function listBooks (req, res, next) {
   try {
     const books = await Book.getAll()
+
     res.json(
       books.map((book) => ({
         _id: book._id,
@@ -40,6 +41,7 @@ async function addBook (req, res, next) {
 async function clearBooks (req, res, next) {
   try {
     const response = await Book.drop()
+
     if (response) {
       res.send('complete delete successful')
     } else {
@@ -53,6 +55,7 @@ async function clearBooks (req, res, next) {
 async function viewBook (req, res, next) {
   try {
     const book = await Book.get(req.params.id)
+
     if (book) {
       res.json(book)
     } else {
@@ -66,6 +69,7 @@ async function viewBook (req, res, next) {
 async function addComment (req, res, next) {
   try {
     const book = await Book.update(req.params.id, req.body.comment)
+
     if (book) {
       res.json(book)
     } else {
@@ -79,6 +83,7 @@ async function addComment (req, res, next) {
 async function removeBook (req, res, next) {
   try {
     const response = await Book.remove(req.params.id)
+
     if (response) {
       res.send('delete successful')
     } else {
