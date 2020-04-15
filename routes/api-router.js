@@ -1,7 +1,7 @@
 'use strict'
 
 const router = require('express').Router()
-const api = require('../handlers')
+const api = require('../controller')
 
 router.route('/books')
   .get(api.listBooks)
