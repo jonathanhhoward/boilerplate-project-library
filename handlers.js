@@ -1,7 +1,6 @@
 'use strict'
 
-const { connect } = require('./db')
-const { ObjectID } = require('mongodb')
+const Book = require('./model')
 
 module.exports = {
   listBooks,
@@ -12,88 +11,80 @@ module.exports = {
   viewBook
 }
 
-function listBooks (req, res) {
-  connect.then((client) => {
-    client.db().collection('books')
-      .find()
-      .toArray()
-      .then((results) => res.json(
-        results.map((doc) => ({
-          _id: doc._id,
-          title: doc.title,
-          commentcount: doc.comments.length
-        }))
-      ))
-      .catch(console.error)
-  })
-    .catch(console.error)
-}
-
-function addBook (req, res) {
-  const book = {
-    title: req.body.title,
-    comments: []
+async function listBooks (req, res, next) {
+  try {
+    const books = await Book.getAll()
+    res.json(
+      books.map((book) => ({
+        _id: book._id,
+        title: book.title,
+        commentcount: book.comments.length
+      }))
+    )
+  } catch (err) {
+    next(err)
   }
-
-  if (!book.title) return res.send('missing title')
-
-  connect.then((client) => {
-    client.db().collection('books')
-      .insertOne(book)
-      .then((result) => res.json(result.ops[0]))
-      .catch(console.error)
-  })
-    .catch(console.error)
 }
 
-function clearBooks (req, res) {
-  connect.then((client) => {
-    client.db().collection('books')
-      .drop()
-      .then((result) => {
-        result ? res.send('complete delete successful') : res.send('no deletion')
-      })
-      .catch(console.error)
-  })
-    .catch(console.error)
+async function addBook (req, res, next) {
+  if (!req.body.title) return res.send('missing title')
+
+  try {
+    const book = await Book.create(req.body.title)
+    res.json(book)
+  } catch (err) {
+    next(err)
+  }
 }
 
-function viewBook (req, res) {
-  connect.then((client) => {
-    client.db().collection('books')
-      .findOne({ _id: ObjectID(req.params.id) })
-      .then((result) => {
-        result ? res.json(result) : res.send('no book exists')
-      })
-      .catch(console.error)
-  })
-    .catch(console.error)
+async function clearBooks (req, res, next) {
+  try {
+    const response = await Book.drop()
+    if (response) {
+      res.send('complete delete successful')
+    } else {
+      res.send('no deletion')
+    }
+  } catch (err) {
+    next(err)
+  }
 }
 
-function addComment (req, res) {
-  connect.then((client) => {
-    client.db().collection('books')
-      .findOneAndUpdate(
-        { _id: ObjectID(req.params.id) },
-        { $push: { comments: req.body.comment } },
-        { returnOriginal: false }
-      )
-      .then((result) => {
-        result.value ? res.json(result.value) : res.send('no book exists')
-      })
-      .catch(console.error)
-  })
-    .catch(console.error)
+async function viewBook (req, res, next) {
+  try {
+    const book = await Book.get(req.params.id)
+    if (book) {
+      res.json(book)
+    } else {
+      res.send('no book exists')
+    }
+  } catch (err) {
+    next(err)
+  }
 }
 
-function removeBook (req, res) {
-  connect.then((client) => {
-    client.db().collection('books')
-      .findOneAndDelete({ _id: ObjectID(req.params.id) })
-      .then((result) => {
-        result.value ? res.send('delete successful') : res.send('no book exists')
-      })
-      .catch(console.error)
-  })
-    .catch(console.error)
+async function addComment (req, res, next) {
+  try {
+    const book = await Book.update(req.params.id, req.body.comment)
+    if (book) {
+      res.json(book)
+    } else {
+      res.send('no book exists')
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function removeBook (req, res, next) {
+  try {
+    const response = await Book.remove(req.params.id)
+    if (response) {
+      res.send('delete successful')
+    } else {
+      res.send('no book exists')
+    }
+  } catch (err) {
+    next(err)
+  }
 }
