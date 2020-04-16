@@ -5,11 +5,11 @@ const api = require('../controller')
 
 router.route('/books')
   .get(api.listBooks)
-  .post(api.addBook)
+  .post(api.createBook)
   .delete(api.clearBooks)
 
 router.route('/books/:id')
-  .get(api.viewBook)
+  .get(api.getBook)
   .post(api.addComment)
   .delete(api.removeBook)
 
